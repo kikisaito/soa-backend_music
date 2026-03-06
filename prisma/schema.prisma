@@ -1,0 +1,24 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+model FavoriteTrack {
+  id         Int      @id @default(autoincrement())
+  trackId    String   
+  title      String
+  artist     String
+  albumCover String
+  createdAt  DateTime @default(now())
+}
