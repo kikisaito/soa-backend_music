@@ -3,7 +3,7 @@ import cors from 'cors';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-import https from 'https'; // <-- CAMBIO 1: Importamos el módulo https de Node
+import https from 'https'; 
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 const prisma = new PrismaClient();
 
-// CAMBIO 1: Creamos el agente para evadir el bloqueo del certificado en redes locales estrictas
+// agente para evadir el bloqueo del certificado en redes locales estrictas
 const httpsAgent = new https.Agent({
   rejectUnauthorized: false, 
 });
@@ -35,14 +35,14 @@ app.get('/api/music/search', async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Falta el parámetro de búsqueda (q)' });
         }
 
-        // Pedimos 60 resultados a iTunes (para tener unas 5 páginas de datos)
+        //60 tu
         const itunesResponse = await axios.get(`https://itunes.apple.com/search?term=${query}&entity=song&limit=60`, {
             httpsAgent
         });
         
         const allResults = itunesResponse.data.results || [];
         
-        // Aplicamos la paginación en nuestra propia capa de servicios
+        //paginación 
         const startIndex = (page - 1) * limitPerPage;
         const paginatedResults = allResults.slice(startIndex, startIndex + limitPerPage);
         
@@ -57,11 +57,13 @@ app.get('/api/music/search', async (req: Request, res: Response) => {
 
 
 
-//Next.js pueda consultar la base de datos
+
+
+
 app.get('/api/music/favorites', async (req: Request, res: Response) => {
     try {
         const favorites = await prisma.favoriteTrack.findMany({
-            orderBy: { createdAt: 'desc' } // Las más recientes primero
+            orderBy: { createdAt: 'desc' } 
         });
         res.json(favorites);
     } catch (error) {
@@ -75,10 +77,8 @@ app.get('/api/music/favorites', async (req: Request, res: Response) => {
 
 
 
-// 3. ENDPOINT DE BASE DE DATOS (Persistencia Propia con Prisma)
 app.post('/api/music/favorites', async (req: Request, res: Response) => {
     try {
-        // CAMBIO 3: Cambiamos deezerId por trackId (iTunes)
         const { trackId, title, artist, albumCover } = req.body;
 
         const newFavorite = await prisma.favoriteTrack.create({
